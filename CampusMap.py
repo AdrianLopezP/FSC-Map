@@ -8,12 +8,11 @@ from scipy import spatial
 import sys
 import tkinter.messagebox
 
-IMAGEROOT = '~/OneDrive/Adrian Lopez/Personal Code'
+IMAGEROOT = os.getcwd()
 IMAGEFILE = 'fsc_campus_map.png'
 
 def main():
     # Create main window of application
-    global gui
     gui = tk.Tk()
     gui.title("FSC Campus Map")
     gui.configure(background='grey')

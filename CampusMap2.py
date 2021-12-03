@@ -1,4 +1,5 @@
-import tkinter as tk
+
+from tkinter import *
 from PIL import ImageTk, Image
 import os
 
@@ -6,6 +7,7 @@ IMAGEROOT = os.getcwd()
 IMAGEFILE = 'fsc_campus_map.png'
 WIDTH = 1050
 HEIGHT = 550
+COLORS = {'bg': '#DDA0DD', 'txt': '#cccccc'}
 NAMES = ['Barnett Athletic Complex', 'Badcock Memorial Garden','Mr. George\'s Green', 'Water Dome',
         'Dell Hall','Hollis Hall','Miller Hall','Allan Spivey Hall','Joseph Reynolds Hall',
         'Wesley Hall','Nicholas Hall','Buck Stop Grill (Pizza)','Happy Place','The Caf','Greenhouse',
@@ -60,7 +62,7 @@ def main():
     root, canvas = guisetup()
 
     map = ImageTk.PhotoImage(Image.open(IMAGEFILE))
-    x0 = 175  # TOD: Force player to start in the middle of the screen
+    x0 = 175
     y0 = HEIGHT - 1000
     canvas.create_image(0, 0, image=map, anchor=NW, tag='player')
 
@@ -69,7 +71,7 @@ def main():
 
 
 def guisetup():
-    root = tk()
+    root = Tk()
     root.title("FSC Campus Map")
     root.iconbitmap("FSCLOGO.ico")
     x = (root.winfo_screenwidth() - WIDTH) // 2

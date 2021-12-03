@@ -1,13 +1,14 @@
-
 from tkinter import *
 from PIL import ImageTk, Image
-import os
+import numpy as np
+from scipy.spatial.distance import cdist, squareform
 
-IMAGEROOT = os.getcwd()
 IMAGEFILE = 'fsc_campus_map.png'
-WIDTH = 1050
-HEIGHT = 550
-COLORS = {'bg': '#DDA0DD', 'txt': '#cccccc'}
+WIDTH = 985
+HEIGHT = 525
+COLORS = {'txt': '#000000'}
+THOLD = 40
+FONT = ("Consolas", 10, "bold")
 NAMES = ['Barnett Athletic Complex', 'Badcock Memorial Garden','Mr. George\'s Green', 'Water Dome',
         'Dell Hall','Hollis Hall','Miller Hall','Allan Spivey Hall','Joseph Reynolds Hall',
         'Wesley Hall','Nicholas Hall','Buck Stop Grill (Pizza)','Happy Place','The Caf','Greenhouse',
@@ -60,15 +61,12 @@ COORDINATES = [(512, 113),(407, 183),(540, 261),
 
 def main():
     root, canvas = guisetup()
-
     map = ImageTk.PhotoImage(Image.open(IMAGEFILE))
-    x0 = 175
-    y0 = HEIGHT - 1000
-    canvas.create_image(0, 0, image=map, anchor=NW, tag='player')
-
+    canvas.create_image(0, 0, image=map, anchor=NW, tag='map')
+    buildings = dict(zip(NAMES, COORDINATES))
+    root.bind("<Button 1>", lambda event: getorigin(event, buildings, canvas))
+    root.bind("<Escape>", endgame)
     root.mainloop()
-
-
 
 def guisetup():
     root = Tk()
@@ -79,8 +77,31 @@ def guisetup():
     root.geometry(f"{WIDTH}x{HEIGHT}+{x}+{y}")  # adjust the size of the window
     root.resizable(False, False)  # make the window fixed
 
-    canvas = Canvas(root, width=WIDTH, height=HEIGHT, background=COLORS['bg'], borderwidth=0)
-    canvas.setvar('stillplaying', True)
+    canvas = Canvas(root, width=WIDTH, height=HEIGHT, borderwidth=0)
     canvas.pack()
 
     return root, canvas
+
+def getorigin(event, buildings, canvas):
+    pt = np.array([event.x, event.y]).reshape(-1, 2)
+    bldg = np.array(list(buildings.values()))
+    d = cdist(pt, bldg)[0]
+
+    smallest = min(d)
+    if smallest < THOLD:
+        buildingIndex = np.argmin(d)
+        buildingName = list(buildings)[buildingIndex]
+        print("Click was called (whichbuilding:", buildingIndex, ")", sep="")
+        click(canvas, list(buildings.keys())[buildingIndex], list(buildings.values())[buildingIndex])
+
+def click(canvas, name, coordinates):
+    print("Click works! (", coordinates, ")", sep="")
+    canvas.delete('text', 'back')
+    text = canvas.create_text(coordinates[0], coordinates[1] + 20, text=name, anchor=CENTER, fill=COLORS['txt'], font=FONT, tag='text')
+    back = canvas.create_rectangle(canvas.bbox(text),fill="white", tag='back')
+    canvas.tag_lower(back, text)
+
+def endgame(event):
+    event.widget.destroy()
+
+main()

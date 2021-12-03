@@ -5,11 +5,15 @@ import tkinter as tk
 from PIL import ImageTk, Image
 import os
 from scipy import spatial
+from scipy.spatial.distance import cdist, squareform
+import numpy as np
 import sys
 import tkinter.messagebox
+import pdb
 
 IMAGEROOT = os.getcwd()
 IMAGEFILE = 'fsc_campus_map.png'
+THOLD = 40
 
 def main():
     # Create main window of application
@@ -18,7 +22,7 @@ def main():
     gui.configure(background='grey')
 
     # Create global lists with names and with coordinates
-    global names, coordinates, img, panel
+    global names, img, panel
     names = ['Barnett Athletic Complex', 'Badcock Memorial Garden','Mr. George\'s Green', 'Water Dome',
         'Dell Hall','Hollis Hall','Miller Hall','Allan Spivey Hall','Joseph Reynolds Hall',
         'Wesley Hall','Nicholas Hall','Buck Stop Grill (Pizza)','Happy Place','The Caf','Greenhouse',
@@ -68,7 +72,8 @@ def main():
         (795, 151),(628, 211),(623, 332),(579, 362),
         (618, 453),(656, 365),(662, 314),(794, 347),
         (793, 280),(927, 366),(866, 334)]
-
+    buildings = dict(zip(names, coordinates))
+    
     # Checks that the length of both lists are equal and stops program if not
     if (len(names) == len(coordinates)):
         print("All good!")
@@ -90,7 +95,7 @@ def main():
     # gui.bind('<Motion>', motion)
 
     # Add callback function for cursor motion
-    gui.bind("<Button 1>",getorigin)
+    gui.bind("<Button 1>", lambda event: getorigin(event, buildings))
 
     # Start the GUI
     gui.mainloop()
@@ -102,17 +107,27 @@ def click(name):
     tkinter.messagebox.showinfo("FSC Campus Map", name)
 
 # (WORK) After click, Finds closest coordinates in the list and returns name of location
-def getorigin(event):
+def getorigin(event, buildings):
     x = event.x
     y = event.y
-    tree = spatial.KDTree(coordinates)
-    index = str((tree.query([(x,y)]))[1])
-    if (len(index) == 3):
-        #print(names[int(index[1])])
-        click(names[int(index[1])])
-    else:
-        #print(names[int(index[1:3])])
-        click(names[int(index[1:3])])
+    pt = np.array([event.x, event.y]).reshape(-1, 2)
+    bldg = np.array(list(buildings.values()))
+    d = cdist(pt, bldg)[0]
+
+    smallest = min(d)
+    if smallest < THOLD:
+        whichbuilding = np.argmin(d)
+        click(list(buildings.keys())[whichbuilding])
+
+    # pdb.set_trace()
+    # tree = spatial.KDTree(coordinates)
+    # index = str((tree.query([(x,y)]))[1])
+    # if (len(index) == 3):
+    #     #print(names[int(index[1])])
+    #     click(names[int(index[1])])
+    # else:
+    #     #print(names[int(index[1:3])])
+    #     click(names[int(index[1:3])])
 
 # # (RECORD) Track cursor coordinates in terminal
 # def motion(event):

@@ -94,6 +94,8 @@ def main():
     root, canvas = guisetup()
     map = ImageTk.PhotoImage(Image.open(IMAGEFILE))
     canvas.create_image(0, 0, image=map, anchor=NW, tag='map')
+    pin = ImageTk.PhotoImage(Image.open('map-pin.png'))
+    canvas.setvar('pin', pin)
     buildings = dict(zip(NAMES, COORDINATES))
     root.bind("<Button 1>", lambda event: getorigin(event, buildings, canvas))
     root.bind("<Escape>", endgame)
@@ -128,8 +130,7 @@ def click(canvas, name, coordinates):
     
     # I want a pin to show up exactly where the coordinates of the building is.
     # However, it is not showing up.
-    pin = ImageTk.PhotoImage(Image.open('map-pin.jpg'))
-    canvas.create_image(coordinates[0], coordinates[1], image=pin, anchor=S, tag='pin')
+    canvas.create_image(coordinates[0], coordinates[1], image=canvas.getvar('pin'), anchor=S, tag='pin')
     
     text = canvas.create_text(coordinates[0], coordinates[1] + 20, justify=CENTER, text=name, anchor=CENTER, fill=COLORS['txt'], font=FONT, tag='text')
     back = canvas.create_rectangle(canvas.bbox(text),fill=COLORS['bg'], tag='back')

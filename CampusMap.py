@@ -33,14 +33,13 @@ NAMES = ['Barnett\nAthletic\nComplex','Badcock\nMemorial\nGarden','Mr. George\'s
     'Rogers\nField','Willis\nGarden\nof\nMeditation','Patriot\'s\nPlaza',
     'Lucius Pond\nOrdway Building','Military\nScience','L.N.\nPipkin\nBandshell',
     'Barnett\nEarly\nChildhood\nLearning\nand\nHealth','Roberts\nAcademy',
-    'Greek\nVillage\n(Jenkins\nHall)','Greek\nVillage',
-    'Wynee\nWarden\nTennis\nCenter','Wynee Warden\nTennis Center',
+    'Greek\nVillage\n(Jenkins\nHall)','Greek\nVillage','Wynee Warden\nTennis Center',
     'Rinker\nTechnology\nCenter','Swimming\nPool','Lynn\'s\nGarden',
     'Boathouse','Nina B. Hollis\nWellness Center',
     'Charles T. Thrift Building\n(Student Health & Counseling Centers)',
     'Admissions\nCenter','Facilities\nMaintenance\nBuilding',
     'Becker\nBusiness\nBuilding','Weinstein\nComputer\nSciences\nCenter',
-    'Jenkins Hall']
+    'Jenkins Hall','Bus Stop\nHollis Rooms','Bus Stop\nBecker','Bus Stop\nROTC Circle','Bus Stop\nWeinstein']
 
 # List of all the coordinates of the locations on campus
 COORDINATES = [(512, 113),(407, 183),(540, 261),(221, 165),(722, 209),(717, 159),(700, 182),
@@ -51,11 +50,12 @@ COORDINATES = [(512, 113),(407, 183),(540, 261),(221, 165),(722, 209),(717, 159)
         (223, 382),(222, 414),(226, 456),(152, 387),(186, 411),(167, 424),(168, 458),(319, 413),
         (349, 361),(336, 339),(324, 322),(315, 302),(303, 279),(350, 223),(281, 100),(269, 159),
         (319, 22),(337, 104),(410, 340),(439, 169),(395, 95),(587, 177),(579, 214),(762, 12),
-        (900, 64),(646, 93),(670, 94),(859, 127),(830, 140),(628, 211),(623, 332),(579, 362),
-        (618, 453),(656, 365),(662, 314),(794, 347),(793, 280),(927, 366),(866, 334),(745, 88)]
+        (900, 64),(646, 93),(670, 94),(830, 140),(628, 211),(623, 332),(579, 362),
+        (618, 453),(656, 365),(662, 314),(794, 347),(793, 280),(927, 366),(866, 334),(745, 88),
+        (742, 168),(893, 330),(595, 175),(840, 318)]
 
 def main():
-
+    
     # Calls guisetup and catches the return into the root and canvas variables
     root, canvas = guisetup()
 
@@ -69,6 +69,10 @@ def main():
 
     # Creates a dictionary with names as keys and coordinates as values
     buildings = dict(zip(NAMES, COORDINATES))
+
+    # Creates the buttons
+    button = Button(root,text='Bus Stops',width=8,height=1,bd='1',command=showbus(canvas, buildings))
+    button.place(x=5, y=5)
 
     # Calls getorigin whenever the mouse is clicked
     root.bind("<Button 1>", lambda event: getorigin(event, buildings, canvas))
@@ -99,6 +103,7 @@ def guisetup():
 
 def getorigin(event, buildings, canvas):
 
+    print(event.x, " ", event.y)
     # Deletes any pre-existing text, textbox, or pins on the window
     canvas.delete('text', 'back', 'pin')
 
@@ -120,7 +125,7 @@ def getorigin(event, buildings, canvas):
         # Gets the index and name (key) of the location
         buildingIndex = np.argmin(d)
         buildingName = list(buildings)[buildingIndex]
-
+        
         # Calls click
         click(canvas, list(buildings.keys())[buildingIndex], list(buildings.values())[buildingIndex])
 
@@ -138,6 +143,16 @@ def click(canvas, name, coordinates):
     # Adds a textbox and background to the text
     back = canvas.create_rectangle(canvas.bbox(text),fill=COLORS['bg'], tag='back')
     canvas.tag_lower(back, text)
+
+def showbus(canvas, buildings):
+    print("It runs")
+    for i in range(73,len(buildings)):
+        name = list(buildings.keys())[i]
+        coordinates = list(buildings.values())[i]
+        canvas.create_image(coordinates[0], coordinates[1]+5, image=canvas.getvar('pin'), anchor=S, tag='pin')
+        text = canvas.create_text(coordinates[0], coordinates[1] + 20, justify=CENTER, text=name, anchor=N, fill=COLORS['txt'], font=FONT, tag='text')
+        back = canvas.create_rectangle(canvas.bbox(text),fill=COLORS['bg'], tag='back')
+        canvas.tag_lower(back, text)
 
 def endgame(event):
 

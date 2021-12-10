@@ -9,11 +9,11 @@
     * An image of a pin with no background which is displayed each time the user clicks on a location.
 
 ## Instructions
-* Make sure to have these libaries imported:
-    1. from tkinter import *
-    2. from PIL import ImageTk, Image
-    3. import numpy as np
-    4. from scipy.spatial.distance import cdist, squareform
+* Make sure to have these libaries installed:
+    1. tkinter
+    2. PIL
+    3. numpy
+    4. scipy
 * Make sure to have these files downloaded:
     1. CampusMap.py
     2. fsc_campus_map.png

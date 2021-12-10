@@ -29,17 +29,17 @@ NAMES = ['Barnett\nAthletic\nComplex','Badcock\nMemorial\nGarden','Mr. George\'s
     'Planetarium','Polk\nCounty\nScience\nBuilding','Polk\nCounty\nScience\nBuilding',
     'Polk\nCounty\nScience\nBuilding','Polk\nCounty\nScience\nBuilding',
     'Centennial Tower and\nPresidential Garden Plaza','Carlisle\nRogers\nBuilding',
-    'L.A.\nRaulerson\nBuilding','Sharp\nFamily\nTourism\n&\nEducation\nCenter\nUsonian\nHouse',
+    'L.A.\nRaulerson\nBuilding','Sharp Family Tourism\n& Education Center\nUsonian House',
     'Rogers\nField','Willis\nGarden\nof\nMeditation','Patriot\'s\nPlaza',
     'Lucius Pond\nOrdway Building','Military\nScience','L.N.\nPipkin\nBandshell',
     'Barnett\nEarly\nChildhood\nLearning\nand\nHealth','Roberts\nAcademy',
-    'Greek\nVillage\n(Jenkins\nHall)','Greek\nVillage','Wynee Warden\nTennis Center',
+    'Greek Village','Greek Village','Wynee Warden\nTennis Center',
     'Rinker\nTechnology\nCenter','Swimming\nPool','Lynn\'s\nGarden',
     'Boathouse','Nina B. Hollis\nWellness Center',
     'Charles T. Thrift Building\n(Student Health & Counseling Centers)',
     'Admissions\nCenter','Facilities\nMaintenance\nBuilding',
     'Becker\nBusiness\nBuilding','Weinstein\nComputer\nSciences\nCenter',
-    'Jenkins Hall','Bus Stop\nHollis Rooms','Bus Stop\nBecker','Bus Stop\nROTC Circle','Bus Stop\nWeinstein']
+    'Jenkins Hall']
 
 # List of all the coordinates of the locations on campus
 COORDINATES = [(512, 113),(407, 183),(540, 261),(221, 165),(722, 209),(717, 159),(700, 182),
@@ -49,10 +49,16 @@ COORDINATES = [(512, 113),(407, 183),(540, 261),(221, 165),(722, 209),(717, 159)
         (187, 94),(225, 110),(167, 154),(188, 154),(187, 236),(245, 269),(235, 311),(224, 358),
         (223, 382),(222, 414),(226, 456),(152, 387),(186, 411),(167, 424),(168, 458),(319, 413),
         (349, 361),(336, 339),(324, 322),(315, 302),(303, 279),(350, 223),(281, 100),(269, 159),
-        (319, 22),(337, 104),(410, 340),(439, 169),(395, 95),(587, 177),(579, 214),(762, 12),
+        (190, 22),(337, 104),(410, 340),(439, 169),(395, 95),(587, 177),(579, 214),(762, 12),
         (900, 64),(646, 93),(670, 94),(830, 140),(628, 211),(623, 332),(579, 362),
-        (618, 453),(656, 365),(662, 314),(794, 347),(793, 280),(927, 366),(866, 334),(745, 88),
-        (742, 168),(893, 330),(595, 175),(840, 318)]
+        (618, 453),(656, 365),(662, 314),(794, 347),(793, 280),(927, 366),(866, 334),(745, 88)]
+
+# Dictionary with names and coordinates of bus stops
+BUSSTOPS = {'Hollis Rooms': (742, 168),'Becker': (893, 337), 'ROTC Circle': (590, 175),
+            'Weinstein': (844, 318), 'Buckner': (184, 270)}
+
+PARKING = [(891, 286),(801, 204),(698, 301),(625, 184),(551, 323),(380, 451),(106, 453),(162, 307),(144, 121),(253, 60),
+            (54, 137),(49, 210),(50, 273),(320, 21),(478, 67),(338, 102),(700, 31),(741, 117),(770, 80),(108, 368)]
 
 def main():
     
@@ -70,9 +76,21 @@ def main():
     # Creates a dictionary with names as keys and coordinates as values
     buildings = dict(zip(NAMES, COORDINATES))
 
-    # Creates the buttons
-    button = Button(root,text='Bus Stops',width=8,height=1,bd='1',command=showbus(canvas, buildings))
-    button.place(x=5, y=5)
+    # Creates the button for bus stops
+    busButton = Button(root,text='Bus Stops',width=7,height=1,bd='1')
+    busButton['command'] = lambda arg1=canvas, arg2=BUSSTOPS : showbus(arg1, arg2)
+    busButton.place(x=5, y=5)
+
+    
+    # Creates the button for parking
+    parkingButton = Button(root,text='Parking',width=7,height=1,bd='1')
+    parkingButton['command'] = lambda arg1=canvas, arg2=PARKING : showParking(arg1, arg2)
+    parkingButton.place(x=5, y=35)
+
+    # Creates button for clearing the screen
+    closeButton1 = Button(root,text='Clear',width=5,height=1,bd='1')
+    closeButton1['command'] = lambda arg1=canvas : close(arg1)
+    closeButton1.place(x=70, y=5)
 
     # Calls getorigin whenever the mouse is clicked
     root.bind("<Button 1>", lambda event: getorigin(event, buildings, canvas))
@@ -103,7 +121,6 @@ def guisetup():
 
 def getorigin(event, buildings, canvas):
 
-    print(event.x, " ", event.y)
     # Deletes any pre-existing text, textbox, or pins on the window
     canvas.delete('text', 'back', 'pin')
 
@@ -144,15 +161,42 @@ def click(canvas, name, coordinates):
     back = canvas.create_rectangle(canvas.bbox(text),fill=COLORS['bg'], tag='back')
     canvas.tag_lower(back, text)
 
-def showbus(canvas, buildings):
-    print("It runs")
-    for i in range(73,len(buildings)):
-        name = list(buildings.keys())[i]
-        coordinates = list(buildings.values())[i]
+def showbus(canvas, BUSSTOPS):
+
+    # Creates Bus Stops title
+    canvas.create_text(470, 18, justify=CENTER, text='Bus Stops', anchor=CENTER, fill=COLORS['txt'], font=("Consolas", 22, "bold"), tag='text')
+
+    # Loops through BUSSTOPS dictionary
+    for i in range(len(BUSSTOPS)):
+
+        # Finds and stores the name and coordinates in variables
+        name = list(BUSSTOPS.keys())[i]
+        coordinates = list(BUSSTOPS.values())[i]
+
+        # Creates pin image at correct coordinate and creates text and textbox near the pin
         canvas.create_image(coordinates[0], coordinates[1]+5, image=canvas.getvar('pin'), anchor=S, tag='pin')
-        text = canvas.create_text(coordinates[0], coordinates[1] + 20, justify=CENTER, text=name, anchor=N, fill=COLORS['txt'], font=FONT, tag='text')
+        text = canvas.create_text(coordinates[0], coordinates[1] + 10, justify=CENTER, text=name, anchor=N, fill=COLORS['txt'], font=FONT, tag='text')
         back = canvas.create_rectangle(canvas.bbox(text),fill=COLORS['bg'], tag='back')
         canvas.tag_lower(back, text)
+
+def showParking(canvas, PARKING):
+
+    # Creates Parking title
+    canvas.create_text(470, 18, justify=CENTER, text='Parking', anchor=CENTER, fill=COLORS['txt'], font=("Consolas", 22, "bold"), tag='text')
+    
+    # Loops through PARKING list
+    for i in range(len(PARKING)):
+        
+        # Finds and stores the coordinates in variables
+        coordinates = PARKING[i]
+
+        # Displays pin image at the coordinates of a parking spot
+        canvas.create_image(coordinates[0], coordinates[1]+5, image=canvas.getvar('pin'), anchor=S, tag='pin')
+
+def close(canvas):
+
+    # Deletes any pin, text, and textbox on the screen
+    canvas.delete('text', 'back', 'pin')
 
 def endgame(event):
 

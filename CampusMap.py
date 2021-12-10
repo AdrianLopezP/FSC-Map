@@ -2,8 +2,9 @@ from tkinter import *
 from PIL import ImageTk, Image
 import numpy as np
 from scipy.spatial.distance import cdist, squareform
+import time
 
-IMAGEFILE = 'fsc_campus_map.png'
+IMAGEFILE = {'map': 'fsc_campus_map.png', 'pin': 'map-pin.png', 'fsc': 'FSCIMG.jpg'}
 WIDTH = 985
 HEIGHT = 525
 COLORS = {'txt': '#FF0000', 'bg': '#FFFFFF'}
@@ -61,16 +62,15 @@ PARKING = [(891, 286),(801, 204),(698, 301),(625, 184),(551, 323),(380, 451),(10
             (54, 137),(49, 210),(50, 273),(320, 21),(478, 67),(338, 102),(700, 31),(741, 117),(770, 80),(108, 368)]
 
 def main():
-    
     # Calls guisetup and catches the return into the root and canvas variables
     root, canvas = guisetup()
 
     # Open map image and puts it on the the window
-    map = ImageTk.PhotoImage(Image.open(IMAGEFILE))
+    map = ImageTk.PhotoImage(Image.open(IMAGEFILE['map']))
     canvas.create_image(0, 0, image=map, anchor=NW, tag='map')
 
     # Open pin image and assigns it to the 'pin' variable
-    pin = ImageTk.PhotoImage(Image.open('map-pin.png').resize((50,50)))
+    pin = ImageTk.PhotoImage(Image.open(IMAGEFILE['pin']).resize((50,50)))
     canvas.setvar('pin', pin)
 
     # Creates a dictionary with names as keys and coordinates as values
@@ -80,7 +80,6 @@ def main():
     busButton = Button(root,text='Bus Stops',width=7,height=1,bd='1')
     busButton['command'] = lambda arg1=canvas, arg2=BUSSTOPS : showbus(arg1, arg2)
     busButton.place(x=5, y=5)
-
     
     # Creates the button for parking
     parkingButton = Button(root,text='Parking',width=7,height=1,bd='1')

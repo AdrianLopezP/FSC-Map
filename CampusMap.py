@@ -2,7 +2,6 @@ from tkinter import *
 from PIL import ImageTk, Image
 import numpy as np
 from scipy.spatial.distance import cdist, squareform
-import time
 
 IMAGEFILE = {'map': 'fsc_campus_map.png', 'pin': 'map-pin.png', 'fsc': 'FSCIMG.jpg'}
 WIDTH = 985

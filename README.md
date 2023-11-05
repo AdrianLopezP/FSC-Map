@@ -1,4 +1,4 @@
-#Florida Southern College Interactive Map
+# Florida Southern College Interactive Map
 
 ## Description
 * CampusMap.py
